@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const connection = require("../config").connection;
+const EmployeeModel = require("../models/Employee");
 
 router.get("/", (req, res) => {
   const query = "SELECT * from employees";
@@ -14,14 +15,9 @@ router.post("/", (req, res) => {
   const hire_date = new Date();
   var emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
   const query = "INSERT INTO employees SET ?";
-  const employee = {
-    name: req.body.name,
-    email: req.body.email,
-    hire_date: hire_date,
-    salary: req.body.salary,
-    job_title: req.body.job_title,
-    project_id: req.body.project_id,
-  };
+
+  const employee = new EmployeeModel.EmployeePostBody(req.body);
+  employee.Hire_date = hire_date;
 
   var valid = emailRegex.test(employee.email);
   if (!valid) res.status(500).send("Wrong email format");
