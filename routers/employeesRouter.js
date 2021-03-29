@@ -6,14 +6,14 @@ router.get("/", (req, res) => {
   const query = "SELECT * from employees";
   connection.query(query, function (error, results, fields) {
     if (error) res.status(500).send(err);
-    res.send(JSON.stringify(results));
+    res.status(200).send(JSON.stringify(results));
   });
 });
 
 router.post("/", (req, res) => {
   const hire_date = new Date();
   var emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
-
+  const query = "INSERT INTO employees SET ?";
   const employee = {
     name: req.body.name,
     email: req.body.email,
@@ -26,19 +26,48 @@ router.post("/", (req, res) => {
   var valid = emailRegex.test(employee.email);
   if (!valid) res.status(500).send("Wrong email format");
 
-  connection.query(
-    "INSERT INTO employees SET ?",
-    employee,
-    function (error, results, fields) {
-      if (error) {
-        console.log(error);
-        res.status(500).json({
-          message: "Status Server 500",
-        });
-      }
-      res.status(200).send(JSON.stringify(employee));
+  connection.query(query, employee, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500).json({
+        message: "Status Server 500",
+      });
     }
-  );
+    res.status(200).send(JSON.stringify(results));
+  });
+});
+
+router.put("/:id", function (req, res) {
+  let id = req.params.id;
+  const query = "UPDATE employees SET ? where id = ?";
+  const updatedEmployee = req.body;
+  id = parseInt(id);
+  const data = [updatedEmployee, id];
+
+  connection.query(query, data, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500).json({
+        message: "Status Server 500",
+      });
+    }
+    res.status(200).send(JSON.stringify(results));
+  });
+});
+
+router.delete("/:id", function (req, res) {
+  let id = req.params.id;
+  id = parseInt(id);
+  const query = "Delete from employees where id = ?";
+  connection.query(query, id, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.status(500).json({
+        message: "Status Server 500",
+      });
+    }
+    res.status(200).send(JSON.stringify(results));
+  });
 });
 
 module.exports = router;
