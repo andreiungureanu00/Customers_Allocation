@@ -16,13 +16,6 @@ router.post("/", (req, res) => {
   const finish_date = new Date();
   const query = "INSERT INTO projects SET ?";
   finish_date.setDate(start_date.getDate() + 7);
-  // const project = {
-  //   project_name: req.body.project_name,
-  //   start_date: start_date,
-  //   planned_end_date: finish_date,
-  //   description: req.body.description,
-  //   project_code: req.body.project_code,
-  // };
 
   const project = new Project(req.body);
   project.Planned_end_date = finish_date;
