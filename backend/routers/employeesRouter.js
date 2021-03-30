@@ -4,11 +4,25 @@ const connection = require("../config").connection;
 const EmployeeModel = require("../models/Employee");
 
 router.get("/", (req, res) => {
-  const query = "SELECT * from employees";
-  connection.query(query, function (error, results, fields) {
-    if (error) res.status(500).send(err);
-    res.status(200).send(JSON.stringify(results));
-  });
+  if (!req.query.project_id) {
+    const query = "SELECT * from employees";
+    connection.query(query, function (error, results, fields) {
+      if (error) res.status(500).send(err);
+      res.status(200).send(JSON.stringify(results));
+    });
+  }
+  const projectID = parseInt(req.query.project_id);
+  if (Number.isInteger(projectID) === true) {
+    const query = "SELECT * from employees where project_id = ?";
+    connection.query(query, projectID, function (error, results, fields) {
+      if (error) res.status(500).send(err);
+      res.status(200).send(JSON.stringify(results));
+    });
+  } else {
+    res
+      .status(400)
+      .send("Incompatible projectID format. Please provide a number");
+  }
 });
 
 router.post("/", (req, res) => {
