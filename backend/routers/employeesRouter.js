@@ -26,12 +26,11 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  const hire_date = new Date();
   var emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
   const query = "INSERT INTO employees SET ?";
 
   const employee = new EmployeeModel.EmployeePostBody(req.body);
-  employee.Hire_date = hire_date;
+  employee.Hire_date = new Date(employee.Hire_date);
 
   var valid = emailRegex.test(employee.email);
   if (!valid) res.status(500).send("Wrong email format");
@@ -53,6 +52,8 @@ router.put("/:id", function (req, res) {
   const updatedEmployee = req.body;
   id = parseInt(id);
   const data = [updatedEmployee, id];
+
+  updatedEmployee.hire_date = new Date(updatedEmployee.hire_date);
 
   connection.query(query, data, function (error, results, fields) {
     if (error) {

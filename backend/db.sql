@@ -21,3 +21,4 @@ CREATE TABLE IF NOT EXISTS `employees` (
     FOREIGN KEY (`project_id`) REFERENCES projects(`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+

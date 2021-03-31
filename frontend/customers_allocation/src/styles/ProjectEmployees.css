@@ -1,0 +1,27 @@
+.container {
+  width: fit-content;
+  text-align: center;
+}
+
+#return_button {
+  margin: 1vw;
+  width: fit-content;
+  cursor: pointer;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+}
+
+#return_button img {
+  width: 100%;
+  height: auto;
+  margin: auto;
+  max-width: 3vw;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+}
