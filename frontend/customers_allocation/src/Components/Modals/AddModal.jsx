@@ -24,6 +24,7 @@ export default function AddModal(props) {
     (async () => {
       try {
         const resp = await axios.post("/employees", employee);
+        props.setUpdate(true);
         console.log(resp.data);
       } catch (err) {
         console.error(err);

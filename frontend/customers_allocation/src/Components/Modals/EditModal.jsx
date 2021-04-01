@@ -6,13 +6,25 @@ import React, { useState } from "react";
 export default function EditModal(props) {
   const [hire_date, onChangeHireDate] = useState(new Date());
 
+  const getEmployeeData = (projectID) => {
+    const employee = {
+      name: document.getElementById("employee_name_edit").value,
+      email: document.getElementById("employee_email_edit").value,
+      hire_date: hire_date,
+      salary: document.getElementById("employee_salary_edit").value,
+      job_title: document.getElementById("employee_job_title_edit").value,
+      project_id: projectID,
+    };
+
+    return employee;
+  };
+
   const editEmployee = (projectID) => {
-    const employee = props.empl;
-    employee.hire_date = hire_date;
-    employee.project_id = projectID;
+    const employee = getEmployeeData(projectID);
     (async () => {
       try {
         const resp = await axios.put(`/employees/${props.empl.id}`, employee);
+        props.setUpdate(true);
         console.log(resp.data);
       } catch (err) {
         console.error(err);
@@ -35,12 +47,7 @@ export default function EditModal(props) {
             <Form.Group controlId="employee_name_edit">
               <Form.Control
                 placeholder="Enter name"
-                value={props.empl.name}
-                onChange={() =>
-                  (props.empl.name = document.getElementById(
-                    "employee_name_edit"
-                  ).value)
-                }
+                defaultValue={props.empl.name}
               />
             </Form.Group>
 
@@ -48,12 +55,7 @@ export default function EditModal(props) {
               <Form.Control
                 type="email"
                 placeholder="Enter email"
-                value={props.empl.email}
-                onChange={() =>
-                  (props.empl.email = document.getElementById(
-                    "employee_email_edit"
-                  ).value)
-                }
+                defaultValue={props.empl.email}
               />
             </Form.Group>
 
@@ -64,24 +66,14 @@ export default function EditModal(props) {
             <Form.Group controlId="employee_salary_edit">
               <Form.Control
                 placeholder="Enter salary"
-                value={props.empl.salary}
-                onChange={() =>
-                  (props.empl.salary = document.getElementById(
-                    "employee_salary_edit"
-                  ).value)
-                }
+                defaultValue={props.empl.salary}
               />
             </Form.Group>
 
             <Form.Group controlId="employee_job_title_edit">
               <Form.Control
                 placeholder="Enter job title"
-                value={props.empl.job_title}
-                onChange={() =>
-                  (props.empl.job_title = document.getElementById(
-                    "employee_job_title_edit"
-                  ).value)
-                }
+                defaultValue={props.empl.job_title}
               />
             </Form.Group>
           </Form>
