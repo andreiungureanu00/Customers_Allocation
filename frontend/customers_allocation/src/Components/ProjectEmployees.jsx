@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useParams } from "react-router-dom";
 import { Container, Row, Button } from "react-bootstrap";
 import AddModal from "./Modals/AddModal";
 import EditModal from "./Modals/EditModal";
 import { ArrowDown, ArrowUp } from "react-bootstrap-icons";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  fetchEmployees,
+  getEmployees,
+  setStatus,
+  deleteEmployee,
+  setEditEmployee,
+  setAddEmployee,
+  setSortKey,
+  setSortType,
+  sortEmployees,
+} from "../slices/employeesSlice";
 
 import { useHistory } from "react-router-dom";
 
@@ -13,70 +24,27 @@ import "../styles/ProjectEmployees.css";
 
 export default function ProjectEmployees() {
   let history = useHistory();
-  const [data, setData] = useState([]);
-  const [update, setUpdate] = useState(false);
-  const [addModal, setAddModal] = useState(false);
-  const [editModal, setEditModal] = useState(false);
   const [empl, setEmpl] = useState(null);
-  const [sortedAscData, setSortedAscData] = useState(false);
-  const [sortedDescData, setSortedDescData] = useState(false);
-  const [keySort, setKeySort] = useState("");
-  const [mounted, setMounted] = useState(false);
+  const employees = useSelector(getEmployees);
+  const employeesStatus = useSelector((state) => state.employees.status);
+
+  const dispatch = useDispatch();
 
   let { projectID } = useParams();
-
-  function SortAsc(key) {
-    return function (a, b) {
-      if (a[key] > b[key]) {
-        return 1;
-      } else if (a[key] < b[key]) {
-        return -1;
-      }
-      return 0;
-    };
-  }
-
-  function SortDesc(key) {
-    return function (a, b) {
-      if (b[key] > a[key]) {
-        return 1;
-      } else if (b[key] < a[key]) {
-        return -1;
-      }
-      return 0;
-    };
-  }
-
-  const deleteEmployee = (id) => {
-    (async () => {
-      const result = await axios.delete(`/employees/${id}`);
-      setUpdate(true);
-    })();
-  };
 
   const takeEmployee = (empl) => {
     setEmpl(empl);
   };
 
   useEffect(() => {
-    setUpdate(false);
-    setMounted(true);
-    (async () => {
-      const result = await axios(`/employees?project_id=${projectID}`);
-      setData(result.data);
-    })();
-    return () => setMounted(false);
-  }, [update]);
+    dispatch(setStatus("idle"));
+  }, []);
 
   useEffect(() => {
-    if (sortedAscData == true) {
-      data.sort(SortAsc(keySort));
-      setSortedAscData(false);
-    } else if (sortedDescData == true) {
-      data.sort(SortDesc(keySort));
-      setSortedDescData(false);
+    if (employeesStatus === "idle") {
+      dispatch(fetchEmployees(projectID));
     }
-  }, [data, sortedAscData, sortedDescData]);
+  }, [employeesStatus, dispatch]);
 
   return (
     <>
@@ -90,12 +58,7 @@ export default function ProjectEmployees() {
       <div className="container">
         <div className="container">
           <h1>Employees for project with id = {projectID}</h1>
-          <table
-            style={{
-              borderCollapse: "collapse",
-              border: "solid 2px black",
-            }}
-          >
+          <table>
             <thead>
               <tr>
                 <th>Employee Name</th>
@@ -106,8 +69,9 @@ export default function ProjectEmployees() {
                     <ArrowUp
                       id="sortAsc_button"
                       onClick={() => {
-                        setSortedAscData(true);
-                        setKeySort("hire_date");
+                        dispatch(setSortType("increasing"));
+                        dispatch(setSortKey("hire_date"));
+                        dispatch(sortEmployees());
                       }}
                     >
                       Sort
@@ -115,8 +79,9 @@ export default function ProjectEmployees() {
                     <ArrowDown
                       id="sortDesc_button"
                       onClick={() => {
-                        setSortedDescData(true);
-                        setKeySort("hire_date");
+                        dispatch(setSortType("decreasing"));
+                        dispatch(setSortKey("hire_date"));
+                        dispatch(sortEmployees());
                       }}
                     ></ArrowDown>
                   </Row>
@@ -127,8 +92,9 @@ export default function ProjectEmployees() {
                     <ArrowUp
                       id="sortAsc_button"
                       onClick={() => {
-                        setSortedAscData(true);
-                        setKeySort("salary");
+                        dispatch(setSortType("increasing"));
+                        dispatch(setSortKey("salary"));
+                        dispatch(sortEmployees());
                       }}
                     >
                       Sort
@@ -136,8 +102,9 @@ export default function ProjectEmployees() {
                     <ArrowDown
                       id="sortDesc_button"
                       onClick={() => {
-                        setSortedDescData(true);
-                        setKeySort("salary");
+                        dispatch(setSortType("decreasing"));
+                        dispatch(setSortKey("salary"));
+                        dispatch(sortEmployees());
                       }}
                     ></ArrowDown>
                   </Row>
@@ -147,7 +114,7 @@ export default function ProjectEmployees() {
               </tr>
             </thead>
             <tbody>
-              {data.map((item) => (
+              {employees.map((item) => (
                 <tr key={item.id}>
                   <td>{item.name}</td>
                   <td>{item.email}</td>
@@ -159,7 +126,7 @@ export default function ProjectEmployees() {
                       <Row>
                         <button
                           onClick={() => {
-                            deleteEmployee(item.id);
+                            dispatch(deleteEmployee(item));
                           }}
                         >
                           Delete
@@ -167,7 +134,7 @@ export default function ProjectEmployees() {
                         <button
                           onClick={() => {
                             takeEmployee(item);
-                            setEditModal(true);
+                            dispatch(setEditEmployee(true));
                           }}
                         >
                           Edit
@@ -183,28 +150,15 @@ export default function ProjectEmployees() {
           <Button
             className="container"
             onClick={() => {
-              setAddModal(true);
+              dispatch(setAddEmployee(true));
             }}
           >
             Add employee
           </Button>
+          <br></br>
         </div>
-        <AddModal
-          projectID={projectID}
-          addModal={addModal}
-          setAddModal={setAddModal}
-          setUpdate={setUpdate}
-        />
-        {empl ? (
-          <EditModal
-            projectID={projectID}
-            editModal={editModal}
-            setEditModal={setEditModal}
-            empl={empl}
-            setUpdate={setUpdate}
-            mounted={mounted}
-          />
-        ) : null}
+        <AddModal projectID={projectID} />
+        {empl ? <EditModal projectID={projectID} empl={empl} /> : null}
       </div>
     </>
   );

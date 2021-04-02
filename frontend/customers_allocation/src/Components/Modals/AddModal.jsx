@@ -1,10 +1,13 @@
 import { Modal, Form, Button } from "react-bootstrap";
 import DateTimePicker from "react-datetime-picker";
-import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addEmployee, setAddEmployee } from "../../slices/employeesSlice";
 
 export default function AddModal(props) {
   const [hire_date, onChangeHireDate] = useState(new Date());
+  const dispatch = useDispatch();
+  const addEmployeeStatus = useSelector((state) => state.employees.addEmployee);
 
   const getEmployeeData = (projectID) => {
     const employee = {
@@ -19,24 +22,16 @@ export default function AddModal(props) {
     return employee;
   };
 
-  const addEmployee = (projectID) => {
+  const add_employee = (projectID) => {
     const employee = getEmployeeData(projectID);
-    (async () => {
-      try {
-        const resp = await axios.post("/employees", employee);
-        props.setUpdate(true);
-        console.log(resp.data);
-      } catch (err) {
-        console.error(err);
-      }
-    })();
+    dispatch(addEmployee(employee));
   };
 
   return (
     <div>
       <Modal
-        show={props.addModal}
-        onHide={() => props.setAddModal(false)}
+        show={addEmployeeStatus}
+        onHide={() => dispatch(setAddEmployee(false))}
         dialogClassName={"primaryModal"}
       >
         <Modal.Header closeButton>
@@ -69,8 +64,8 @@ export default function AddModal(props) {
           <Button
             variant="primary"
             onClick={() => {
-              props.setAddModal(false);
-              addEmployee(props.projectID);
+              dispatch(setAddEmployee(false));
+              add_employee(props.projectID);
             }}
           >
             Submit

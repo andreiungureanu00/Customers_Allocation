@@ -3,6 +3,11 @@
   text-align: center;
 }
 
+.table {
+  border-collapse: "collapse";
+  border: "solid 2px black";
+}
+
 #return_button {
   margin: 1vw;
   width: fit-content;

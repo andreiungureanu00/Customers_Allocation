@@ -6,11 +6,9 @@ import { useHistory } from "react-router-dom";
 
 export default function Home() {
   const [data, setData] = useState([]);
-  const [clicked, setClicked] = useState(false);
   let history = useHistory();
 
   const viewEmployees = (projectID) => {
-    setClicked(true);
     history.push(`/projectEmployees/${projectID}`);
   };
 
@@ -24,13 +22,10 @@ export default function Home() {
 
   return (
     <div className="container">
+      <br></br>
+      <br></br>
       <h1>Projects</h1>
-      <table
-        style={{
-          borderCollapse: "collapse",
-          border: "solid 2px black",
-        }}
-      >
+      <table>
         <thead>
           <tr>
             <th>Project Name</th>

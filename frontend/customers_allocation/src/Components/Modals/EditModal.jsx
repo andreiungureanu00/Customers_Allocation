@@ -1,13 +1,19 @@
 import { Modal, Form, Button } from "react-bootstrap";
 import DateTimePicker from "react-datetime-picker";
-import axios from "axios";
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateEmployee, setEditEmployee } from "../../slices/employeesSlice";
 
 export default function EditModal(props) {
   const [hire_date, onChangeHireDate] = useState(new Date());
+  const dispatch = useDispatch();
+  const editEmployeeStatus = useSelector(
+    (state) => state.employees.editEmployee
+  );
 
   const getEmployeeData = (projectID) => {
     const employee = {
+      id: props.empl.id,
       name: document.getElementById("employee_name_edit").value,
       email: document.getElementById("employee_email_edit").value,
       hire_date: hire_date,
@@ -21,22 +27,14 @@ export default function EditModal(props) {
 
   const editEmployee = (projectID) => {
     const employee = getEmployeeData(projectID);
-    (async () => {
-      try {
-        const resp = await axios.put(`/employees/${props.empl.id}`, employee);
-        props.setUpdate(true);
-        console.log(resp.data);
-      } catch (err) {
-        console.error(err);
-      }
-    })();
+    dispatch(updateEmployee(employee));
   };
 
   return (
     <div>
       <Modal
-        show={props.editModal}
-        onHide={() => props.setEditModal(false)}
+        show={editEmployeeStatus}
+        onHide={() => dispatch(setEditEmployee(false))}
         dialogClassName={"primaryModal"}
       >
         <Modal.Header closeButton>
@@ -82,7 +80,7 @@ export default function EditModal(props) {
           <Button
             variant="primary"
             onClick={() => {
-              props.setEditModal(false);
+              dispatch(setEditEmployee(false));
               editEmployee(props.projectID);
             }}
           >

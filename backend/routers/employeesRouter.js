@@ -42,7 +42,8 @@ router.post("/", (req, res) => {
         message: "Status Server 500",
       });
     }
-    res.status(200).send(JSON.stringify(results));
+    employee["id"] = results.insertId;
+    res.status(200).send(JSON.stringify(employee));
   });
 });
 
@@ -62,7 +63,8 @@ router.put("/:id", function (req, res) {
         message: "Status Server 500",
       });
     }
-    res.status(200).send(JSON.stringify(results));
+    updatedEmployee["id"] = id;
+    res.status(200).send(JSON.stringify(updatedEmployee));
   });
 });
 
