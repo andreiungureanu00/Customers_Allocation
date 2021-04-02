@@ -126,7 +126,14 @@ export const employeesSlice = createSlice({
     },
 
     [deleteEmployee.fulfilled]: (state, action) => {
-      const elementIndex = state.employees.indexOf(action.payload);
+      let elementIndex;
+      const toDeleteEmployee = action.payload;
+      for (let i = 0; i < state.employees; i++) {
+        if (state.employees[i].id === toDeleteEmployee.id) {
+          elementIndex = i;
+          break;
+        }
+      }
       state.employees.splice(elementIndex, 1);
     },
 
