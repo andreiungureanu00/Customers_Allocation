@@ -1,5 +1,12 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import { createSlice } from "@reduxjs/toolkit";
+import { SortAsc, SortDesc } from "./sort";
+
+import {
+  addEmployee,
+  deleteEmployee,
+  fetchEmployees,
+  updateEmployee,
+} from "../thunks/employeesThunks";
 
 const initialState = {
   employees: [],
@@ -10,71 +17,6 @@ const initialState = {
   sortKey: null,
   sortType: null,
 };
-
-function SortAsc(key) {
-  return function (a, b) {
-    if (a[key] > b[key]) {
-      return 1;
-    } else if (a[key] < b[key]) {
-      return -1;
-    }
-    return 0;
-  };
-}
-
-function SortDesc(key) {
-  return function (a, b) {
-    if (b[key] > a[key]) {
-      return 1;
-    } else if (b[key] < a[key]) {
-      return -1;
-    }
-    return 0;
-  };
-}
-
-export const fetchEmployees = createAsyncThunk(
-  "employees/fetchEmployees",
-  async (projectID) => {
-    const response = await axios(`/employees?project_id=${projectID}`);
-    console.log("fetched");
-    return response.data;
-  }
-);
-
-export const deleteEmployee = createAsyncThunk(
-  "employees/deleteEmployee",
-  async (item) => {
-    const response = await axios.delete(`/employees/${item.id}`);
-    return response.data;
-  }
-);
-
-export const addEmployee = createAsyncThunk(
-  "employees/addEmployee",
-  async (employee) => {
-    try {
-      const response = await axios.post("/employees", employee);
-      return response.data;
-    } catch (err) {
-      console.error(err);
-      return err;
-    }
-  }
-);
-
-export const updateEmployee = createAsyncThunk(
-  "employees/updateEmployee",
-  async (employee) => {
-    try {
-      const response = await axios.put(`/employees/${employee.id}`, employee);
-      return response.data;
-    } catch (err) {
-      console.error(err);
-      return err;
-    }
-  }
-);
 
 export const employeesSlice = createSlice({
   name: "employees",
@@ -128,8 +70,12 @@ export const employeesSlice = createSlice({
     [deleteEmployee.fulfilled]: (state, action) => {
       let elementIndex;
       const toDeleteEmployee = action.payload;
-      for (let i = 0; i < state.employees; i++) {
-        if (state.employees[i].id === toDeleteEmployee.id) {
+      console.log(toDeleteEmployee);
+      for (let i = 0; i < state.employees.length; i++) {
+        if (
+          state.employees[i].id === toDeleteEmployee.id &&
+          state.employees[i].project_id === toDeleteEmployee.project_id
+        ) {
           elementIndex = i;
           break;
         }

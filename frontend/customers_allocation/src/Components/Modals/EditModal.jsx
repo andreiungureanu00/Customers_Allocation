@@ -1,8 +1,9 @@
-import { Modal, Form, Button } from "react-bootstrap";
+import { Modal, Form, Button, Row } from "react-bootstrap";
 import DateTimePicker from "react-datetime-picker";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateEmployee, setEditEmployee } from "../../slices/employeesSlice";
+import { updateEmployee } from "../../thunks/employeesThunks";
+import { setEditEmployee } from "../../slices/employeesSlice";
 
 export default function EditModal(props) {
   const [hire_date, onChangeHireDate] = useState(new Date());
@@ -10,6 +11,10 @@ export default function EditModal(props) {
   const editEmployeeStatus = useSelector(
     (state) => state.employees.editEmployee
   );
+
+  useEffect(() => {
+    onChangeHireDate(new Date(props.empl.hire_date));
+  }, [props.empl]);
 
   const getEmployeeData = (projectID) => {
     const employee = {
@@ -34,7 +39,9 @@ export default function EditModal(props) {
     <div>
       <Modal
         show={editEmployeeStatus}
-        onHide={() => dispatch(setEditEmployee(false))}
+        onHide={() => {
+          dispatch(setEditEmployee(false));
+        }}
         dialogClassName={"primaryModal"}
       >
         <Modal.Header closeButton>
@@ -58,7 +65,11 @@ export default function EditModal(props) {
             </Form.Group>
 
             <Form.Group controlId="employee_hire_date_edit">
-              <DateTimePicker onChange={onChangeHireDate} value={hire_date} />
+              <DateTimePicker
+                onChange={onChangeHireDate}
+                defaultValue={hire_date}
+                value={hire_date}
+              />
             </Form.Group>
 
             <Form.Group controlId="employee_salary_edit">

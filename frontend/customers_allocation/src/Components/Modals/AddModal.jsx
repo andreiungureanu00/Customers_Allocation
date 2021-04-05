@@ -2,7 +2,8 @@ import { Modal, Form, Button } from "react-bootstrap";
 import DateTimePicker from "react-datetime-picker";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addEmployee, setAddEmployee } from "../../slices/employeesSlice";
+import { setAddEmployee } from "../../slices/employeesSlice";
+import { addEmployee } from "../../thunks/employeesThunks";
 
 export default function AddModal(props) {
   const [hire_date, onChangeHireDate] = useState(new Date());

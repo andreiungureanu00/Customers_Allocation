@@ -6,11 +6,10 @@ import AddModal from "./Modals/AddModal";
 import EditModal from "./Modals/EditModal";
 import { ArrowDown, ArrowUp } from "react-bootstrap-icons";
 import { useSelector, useDispatch } from "react-redux";
+import { fetchEmployees, deleteEmployee } from "../thunks/employeesThunks";
 import {
-  fetchEmployees,
   getEmployees,
   setStatus,
-  deleteEmployee,
   setEditEmployee,
   setAddEmployee,
   setSortKey,
