@@ -28,7 +28,9 @@ router.post("/", (req, res) => {
         message: "Status Server 500",
       });
     }
-    res.status(200).send(JSON.stringify(results));
+    console.log(results);
+    project["id"] = results.insertId;
+    res.status(200).send(JSON.stringify(project));
   });
 });
 
@@ -46,7 +48,8 @@ router.put("/:id", function (req, res) {
         message: "Status Server 500",
       });
     }
-    res.status(200).send(JSON.stringify(results));
+    project["id"] = results.insertId;
+    res.status(200).send(JSON.stringify(project));
   });
 });
 

@@ -45,6 +45,17 @@ services:
     depends_on:
       - back-app
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - back-mysql
+    environment:
+      PMA_HOST: back-mysql
+      PMA_PORT: 3306
+    restart: always
+    ports:
+      - 8081:80
+
 volumes:
   mysql:
   mysql_config:
